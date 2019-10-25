@@ -214,7 +214,7 @@ bool Client::OnInit()
 
 
 	wxImage::AddHandler(new wxPNGHandler);
-	// Получаем данные о програме и каталогах
+	// РџРѕР»СѓС‡Р°РµРј РґР°РЅРЅС‹Рµ Рѕ РїСЂРѕРіСЂР°РјРµ Рё РєР°С‚Р°Р»РѕРіР°С…
 	wxString s = wxApp::argv[0];
 	if (!wxApp::OnInit())
 		return false;
@@ -274,7 +274,7 @@ bool Client::OnInit()
 
 	m_frame->Show(true);
 
-	m_frame->AddMessage(_("Загрузка ")+wxT("GodPool ..."));
+	m_frame->AddMessage(_("Р—Р°РіСЂСѓР·РєР° ")+wxT("GodPool ..."));
 
 
 	return true;
@@ -284,7 +284,7 @@ int Client::OnRun()
 {
 	wxFile f;
 	bool bLocalDir = false;
-	m_frame->AddMessage(_("Проверка версии программы ..."));
+	m_frame->AddMessage(_("РџСЂРѕРІРµСЂРєР° РІРµСЂСЃРёРё РїСЂРѕРіСЂР°РјРјС‹ ..."));
 
 	if(f.Exists(m_path + m_sep + m_name + m_ext))
 	{
@@ -310,8 +310,8 @@ int Client::OnRun()
 		}
 		if (!bLocalDir)
 		{
-			m_frame->AddMessage(_("Не хватает прав для сохранения конфигурации."));
-			m_frame->AddMessage(_("Завершение работы через 30 сек. ..."));
+			m_frame->AddMessage(_("РќРµ С…РІР°С‚Р°РµС‚ РїСЂР°РІ РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ РєРѕРЅС„РёРіСѓСЂР°С†РёРё."));
+			m_frame->AddMessage(_("Р—Р°РІРµСЂС€РµРЅРёРµ СЂР°Р±РѕС‚С‹ С‡РµСЂРµР· 30 СЃРµРє. ..."));
 			Sleep(30 * 1000);
 			return 0;
 		}
@@ -330,14 +330,14 @@ int Client::OnRun()
 
 	int new_version;
 	long long new_crc;
-	// Проверка версии программы если есть связь с сервером
+	// РџСЂРѕРІРµСЂРєР° РІРµСЂСЃРёРё РїСЂРѕРіСЂР°РјРјС‹ РµСЃР»Рё РµСЃС‚СЊ СЃРІСЏР·СЊ СЃ СЃРµСЂРІРµСЂРѕРј
 	wxSocketClient*	clientSocket = new wxSocketClient(wxSOCKET_BLOCK | wxSOCKET_WAITALL);
 	ca.Hostname(DEFAULTSERVERHOST);
 	ca.Service(DEFAULTSERVERPORT);
 	clientSocket->SetTimeout(10);
 //	bool failed = false;
 	sOption = wxT("");
-	// Подключаемся к серверу
+	// РџРѕРґРєР»СЋС‡Р°РµРјСЃСЏ Рє СЃРµСЂРІРµСЂСѓ
 	if (clientSocket->Connect(ca))
 	{
 		sOption = wxT(" -v");
@@ -346,7 +346,7 @@ int Client::OnRun()
 		sPath = m_path + m_sep + m_name + m_ext + sOption;
 		flags |= CREATE_NO_WINDOW;
 
-		// Проверяем версию программы запуск с параметром -v
+		// РџСЂРѕРІРµСЂСЏРµРј РІРµСЂСЃРёСЋ РїСЂРѕРіСЂР°РјРјС‹ Р·Р°РїСѓСЃРє СЃ РїР°СЂР°РјРµС‚СЂРѕРј -v
 		if (CreateProcessW(0, (LPWSTR)sPath.wc_str(), 0, 0, false, flags, 0, 0, &si, &m_pi) != 0)
 		{
 			WaitForSingleObject(m_pi.hProcess, INFINITE);
@@ -355,24 +355,24 @@ int Client::OnRun()
 			CloseHandle(m_pi.hThread);
 			CloseHandle(m_pi.hProcess);
 		}
-		// Получили версию установленной программы
-		m_frame->AddMessage(wxString::Format(_("Установленная версия")+wxT(" %0d.%02d"),m_version/100,m_version%100));
+		// РџРѕР»СѓС‡РёР»Рё РІРµСЂСЃРёСЋ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕР№ РїСЂРѕРіСЂР°РјРјС‹
+		m_frame->AddMessage(wxString::Format(_("РЈСЃС‚Р°РЅРѕРІР»РµРЅРЅР°СЏ РІРµСЂСЃРёСЏ")+wxT(" %0d.%02d"),m_version/100,m_version%100));
 
-		// Запрашиваем версию с сервера
+		// Р—Р°РїСЂР°С€РёРІР°РµРј РІРµСЂСЃРёСЋ СЃ СЃРµСЂРІРµСЂР°
 		sOption = wxT("");
 		new_version = m_version;
 		new_crc = GetLastVersion(clientSocket, new_version);
-		// Сравниваем
+		// РЎСЂР°РІРЅРёРІР°РµРј
 		if (new_version > m_version)
 		{
-			// Если версии не равны проверяем, есть ли скачанная последняя версияс помощью CRC
-			m_frame->AddMessage(wxString::Format(_("Найдено обновление до версии")+wxT(" %0d.%02d"), new_version / 100, new_version % 100));
+			// Р•СЃР»Рё РІРµСЂСЃРёРё РЅРµ СЂР°РІРЅС‹ РїСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё СЃРєР°С‡Р°РЅРЅР°СЏ РїРѕСЃР»РµРґРЅСЏСЏ РІРµСЂСЃРёСЏСЃ РїРѕРјРѕС‰СЊСЋ CRC
+			m_frame->AddMessage(wxString::Format(_("РќР°Р№РґРµРЅРѕ РѕР±РЅРѕРІР»РµРЅРёРµ РґРѕ РІРµСЂСЃРёРё")+wxT(" %0d.%02d"), new_version / 100, new_version % 100));
 			sPath = m_path + m_sep + UPLOADDIR + m_sep + m_name + ".zip";
 			m_crc = CalcCRCFile(sPath.c_str());
 			if (m_crc == -999999 || m_crc != new_crc)
 			{
-				// Если CRC не совпадает запускаем программу в режиме скачивания новой версии
-				m_frame->AddMessage(_("Запущено скачивание новой версии ..."));
+				// Р•СЃР»Рё CRC РЅРµ СЃРѕРІРїР°РґР°РµС‚ Р·Р°РїСѓСЃРєР°РµРј РїСЂРѕРіСЂР°РјРјСѓ РІ СЂРµР¶РёРјРµ СЃРєР°С‡РёРІР°РЅРёСЏ РЅРѕРІРѕР№ РІРµСЂСЃРёРё
+				m_frame->AddMessage(_("Р—Р°РїСѓС‰РµРЅРѕ СЃРєР°С‡РёРІР°РЅРёРµ РЅРѕРІРѕР№ РІРµСЂСЃРёРё ..."));
 				if (f.Exists(sPath))
 				{
 					wxRemoveFile(sPath);
@@ -381,19 +381,19 @@ int Client::OnRun()
 			}
 			else
 			{
-				// делаем бэкап старой версии и распаковываем новую
+				// РґРµР»Р°РµРј Р±СЌРєР°Рї СЃС‚Р°СЂРѕР№ РІРµСЂСЃРёРё Рё СЂР°СЃРїР°РєРѕРІС‹РІР°РµРј РЅРѕРІСѓСЋ
 				sOption = wxT("");
-				m_frame->AddMessage(_("Обновление программы ..."));
-				m_frame->AddMessage(_("Создание резервной копии ..."));
+				m_frame->AddMessage(_("РћР±РЅРѕРІР»РµРЅРёРµ РїСЂРѕРіСЂР°РјРјС‹ ..."));
+				m_frame->AddMessage(_("РЎРѕР·РґР°РЅРёРµ СЂРµР·РµСЂРІРЅРѕР№ РєРѕРїРёРё ..."));
 				if (CreateBackup(m_path+ m_sep + BACKUPDIR + m_sep + m_name + BACKUPDIR + ".zip", m_path, m_name, m_sep))
 				{
-					m_frame->AddMessage(_("Обновление ..."));
+					m_frame->AddMessage(_("РћР±РЅРѕРІР»РµРЅРёРµ ..."));
 					UnzipFile(sPath,m_path);
-					m_frame->AddMessage(_("Обновление завершено."));
+					m_frame->AddMessage(_("РћР±РЅРѕРІР»РµРЅРёРµ Р·Р°РІРµСЂС€РµРЅРѕ."));
 				}
 				else
 				{
-					m_frame->AddMessage(_("Ошибка создания резервной копии."));
+					m_frame->AddMessage(_("РћС€РёР±РєР° СЃРѕР·РґР°РЅРёСЏ СЂРµР·РµСЂРІРЅРѕР№ РєРѕРїРёРё."));
 				}
 			}
 		}
@@ -403,9 +403,9 @@ int Client::OnRun()
 		}
 	}
 
-	m_frame->AddMessage(_("Запуск")+wxT(" GodPool."));
+	m_frame->AddMessage(_("Р—Р°РїСѓСЃРє")+wxT(" GodPool."));
 
-	// Запускаем программу.
+	// Р—Р°РїСѓСЃРєР°РµРј РїСЂРѕРіСЂР°РјРјСѓ.
 	memset((char *)&si, 0, sizeof(si));
 	memset((char *)&m_pi, 0, sizeof(m_pi));
 	flags = 0;
